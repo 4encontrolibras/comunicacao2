@@ -24,10 +24,13 @@
 <body>
 
 <h1>Avaliação de Comunicação Sinalizada</h1>
-<p class="meta">Selecione a opção de avaliação, escreva observações se necessário, escolha seu nome e clique em <strong>Enviar</strong>. O e-mail será preparado para <strong>4encontrolibras@gmail.com</strong>.</p>
+<p class="meta">
+Selecione o resultado, escreva observações se necessário, escolha seu nome e clique em <strong>Enviar</strong>.
+O resultado será enviado automaticamente para <strong>4encontrolibras@gmail.com</strong>.
+</p>
 
 <script>
-const TO_EMAIL = "4encontrolibras@gmail.com";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpKpAEcC_cKwKD15XJYpqI3NrqZTBhB1KfddZSNkG8ccKD5AUBmkn1laCqoX8mY83oQA/exec";
 
 const posters = [
   {id:1, pdf:"https://drive.google.com/file/d/1mPKl7UzA5rWkPed8azTIZS62EMgxLA9E/preview"},
@@ -79,24 +82,23 @@ const posters = [
 
 const avaliadores = ["Ana Regina", "Fernanda Soares", "Heloise Gripp", "Priscilla Cavalcante"];
 
-// cria cada bloco de avaliação
 posters.forEach(p => {
   const container = document.createElement('div');
   container.className = 'poster';
   container.innerHTML = `
     <h2>Avaliação ${p.id}</h2>
     <iframe src="${p.pdf}" title="Pôster ${p.id}"></iframe>
-    <form id="form${p.id}" class="form">
+    <form id="form${p.id}">
       <label>Selecione o resultado:</label>
       <div class="radios">
         <label><input type="radio" name="status" value="Aprovado" required> Aprovado</label>
-        <label><input type="radio" name="status" value="Aprovado com correcoes"> Aprovado com correções</label>
+        <label><input type="radio" name="status" value="Aprovado com correções"> Aprovado com correções</label>
         <label><input type="radio" name="status" value="Reprovado"> Reprovado</label>
       </div>
-      <label for="obs${p.id}">Observações (opcional):</label>
-      <textarea id="obs${p.id}" name="observacoes" placeholder="Escreva suas observações..."></textarea>
-      <label for="aval${p.id}">Avaliador:</label>
-      <select id="aval${p.id}" name="avaliador" required>
+      <label>Observações (opcional):</label>
+      <textarea name="observacoes" placeholder="Escreva suas observações..."></textarea>
+      <label>Avaliador:</label>
+      <select name="avaliador" required>
         <option value="">Selecione</option>
         ${avaliadores.map(a => `<option value="${a}">${a}</option>`).join('')}
       </select>
@@ -107,53 +109,31 @@ posters.forEach(p => {
   `;
   document.body.appendChild(container);
 
-  // Adiciona listener de envio do formulário
   const form = container.querySelector('form');
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    enviarMail(p.id, form);
+    const formData = new FormData(form);
+    formData.append("id", p.id);
+
+    form.querySelector("button").disabled = true;
+    form.querySelector("button").textContent = "Enviando...";
+
+    try {
+      const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
+      const text = await res.text();
+
+      if (text.includes("OK")) {
+        form.innerHTML = `<div class="thanks">Obrigado pela avaliação! (Avaliação ${p.id})</div>`;
+      } else {
+        alert("Erro ao enviar. Tente novamente.");
+        console.log(text);
+      }
+    } catch (err) {
+      alert("Erro de conexão. Verifique sua internet.");
+      console.error(err);
+    }
   });
 });
-
-// função que monta mailto e abre o cliente de e-mail
-function enviarMail(id, form) {
-  // pega status selecionado
-  const statusInput = form.querySelector('input[name="status"]:checked');
-  const status = statusInput ? statusInput.value : '';
-  const observacoes = form.querySelector('textarea[name="observacoes"]').value.trim();
-  const avaliador = form.querySelector('select[name="avaliador"]').value;
-
-  if (!status) {
-    alert('Por favor selecione um resultado antes de enviar.');
-    return;
-  }
-  if (!avaliador) {
-    alert('Por favor selecione seu nome (avaliador).');
-    return;
-  }
-
-  const subject = `Avaliação ${id} - Comunicação Sinalizada`;
-  const bodyLines = [
-    `Avaliação: ${id}`,
-    `Data: ${new Date().toLocaleString()}`,
-    `Avaliador: ${avaliador}`,
-    `Resultado: ${status}`,
-    `Observações:`,
-    observacoes || '(sem observações)',
-    '',
-    '--- Enviado via formulário de avaliação ---'
-  ];
-  const body = bodyLines.join('\n');
-
-  // monta mailto com encode
-  const mailto = `mailto:${TO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  // abre o cliente de e-mail (em nova aba/janela ou no próprio navegador)
-  window.location.href = mailto;
-
-  // mostra mensagem de agradecimento substituindo o formulário
-  form.innerHTML = `<div class="thanks">Obrigado pela avaliação! (Avaliação ${id})</div>`;
-}
 </script>
 
 </body>
