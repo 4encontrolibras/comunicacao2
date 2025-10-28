@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Avaliação de Comunicação Sinalizada</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; line-height:1.4; color:#222; }
+  h1 { font-size: 1.6rem; margin-bottom: 12px; }
+  .poster { border: 1px solid #ddd; padding: 14px; margin-bottom: 18px; border-radius:6px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+  iframe { width: 100%; height: 420px; border: 1px solid #ccc; border-radius:4px; }
+  label { display: block; margin: 8px 0 6px; font-weight:600; }
+  .radios { margin: 6px 0 10px; }
+  .radios input { margin-left: 8px; margin-right:4px; }
+  textarea { width: 100%; min-height: 70px; padding:8px; border-radius:4px; border:1px solid #ccc; resize: vertical; }
+  select { padding:6px; border-radius:4px; border:1px solid #ccc; }
+  button { margin-top:10px; padding:8px 12px; border-radius:6px; border:none; background:#2b7cff; color:white; cursor:pointer; }
+  button:disabled { opacity:0.6; cursor:not-allowed; }
+  .thanks { padding:10px; background:#e6ffed; border:1px solid #b9f0c6; color:#1b6b2a; border-radius:6px; font-weight:600; }
+  .meta { font-size:0.9rem; color:#555; margin-bottom:10px; }
+  @media (min-width:900px){ iframe{ height:480px; } }
+</style>
+</head>
+<body>
+
+<h1>Avaliação de Comunicação Sinalizada</h1>
+<p class="meta">Selecione a opção de avaliação, escreva observações se necessário, escolha seu nome e clique em <strong>Enviar</strong>. O e-mail será preparado para <strong>4encontrolibras@gmail.com</strong>.</p>
+
+<script>
+const TO_EMAIL = "4encontrolibras@gmail.com";
+
+const posters = [
+  {id:1, pdf:"https://drive.google.com/file/d/1mPKl7UzA5rWkPed8azTIZS62EMgxLA9E/preview"},
+  {id:2, pdf:"https://drive.google.com/file/d/1rHamH7g0gki48T6aDV05So7ztlot_uEb/preview"},
+  {id:3, pdf:"https://drive.google.com/file/d/1W8n5H-yFGC7OBvVE-IUXy1fxuTF4zv8W/preview"},
+  {id:4, pdf:"https://drive.google.com/file/d/1ZrLVgccZl88kEAhiRM2I7y1OFEMU7oHW/preview"},
+  {id:5, pdf:"https://drive.google.com/file/d/1v_OkgjXhXxMmIqPaere28Z39bobTIwZX/preview"},
+  {id:6, pdf:"https://drive.google.com/file/d/1I8cR_BAYljxHozzeF5MqFXy6d8HHPEGD/preview"},
+  {id:7, pdf:"https://drive.google.com/file/d/1ON1dMwCUp19bw2E-x2klMY_mdCUGwMdy/preview"},
+  {id:8, pdf:"https://drive.google.com/file/d/1NRKEbPbtKYpy-31mYOzkCyI3m0ItWxB7/preview"},
+  {id:9, pdf:"https://drive.google.com/file/d/1ftCsjgDDCb7IsJrzZCmObGQcMBUmI_6h/preview"},
+  {id:10, pdf:"https://drive.google.com/file/d/1rrjdyMRxJihYv5Hm_4kO0xQ84eX5jgpR/preview"},
+  {id:11, pdf:"https://drive.google.com/file/d/1KUi1jdluoQ-Btj1noIB6eOxfLipRn4UT/preview"},
+  {id:12, pdf:"https://drive.google.com/file/d/1xdiPBxSZ9ejy5-AhCJZXwIk_zxdxFGYe/preview"},
+  {id:13, pdf:"https://drive.google.com/file/d/1ncTFwCMUkhYSQzXKtSWzLCwFROSX0Tdk/preview"},
+  {id:14, pdf:"https://drive.google.com/file/d/1AweykH71U0mTlgdYFL6-oNj_27I98lp9/preview"},
+  {id:15, pdf:"https://drive.google.com/file/d/11AOS8FjhU5EKBiGaZDbMIxl2anKYnhBd/preview"},
+  {id:16, pdf:"https://drive.google.com/file/d/16S6QY4qN0uo8YPKShtmIK33MxlTXDALz/preview"},
+  {id:17, pdf:"https://drive.google.com/file/d/1YX0sQos6MgsHzgICiMBXBANtWRvABdWW/preview"},
+  {id:18, pdf:"https://drive.google.com/file/d/1CyAM2lIc9QVVCH0pCMPxN0TkvLg87jXw/preview"},
+  {id:19, pdf:"https://drive.google.com/file/d/10U6JJMFS5UJiU5mboXo9u-KHX9FzuKQ6/preview"},
+  {id:20, pdf:"https://drive.google.com/file/d/1QAaxyfo_QryvQM1-1RMP3M_bf88sOqKg/preview"},
+  {id:21, pdf:"https://drive.google.com/file/d/194CN6hcF1ID0c0h6DVBq8-QwC8brU4NX/preview"},
+  {id:22, pdf:"https://drive.google.com/file/d/1oIJGDTrwtb3nqspMAVFr2o6OdW-9LggS/preview"},
+  {id:23, pdf:"https://drive.google.com/file/d/1NouU5Ikh9CbN_SZJLL1XjxVFin2q0J5d/preview"},
+  {id:24, pdf:"https://drive.google.com/file/d/1TuuV6BLMtoNyEnmJHwrUzHodSEtmh-BT/preview"},
+  {id:25, pdf:"https://drive.google.com/file/d/1693OdG0eW6_rWvzW3XNFHNkqhWNjwGjb/preview"},
+  {id:26, pdf:"https://drive.google.com/file/d/1A9NOpQn3chCCVcFCpJiDG5srzPkeWmQg/preview"},
+  {id:27, pdf:"https://drive.google.com/file/d/1Ph9lYXsuZ9hExXDePi3OvcN5coBYm8t7/preview"},
+  {id:28, pdf:"https://drive.google.com/file/d/1t6RaD1VrhHr0FxJRqwySMG4embuRij5t/preview"},
+  {id:29, pdf:"https://drive.google.com/file/d/1VwowDq5iQ28R0qcSU7tpqsI62kcLQE3w/preview"},
+  {id:30, pdf:"https://drive.google.com/file/d/1SY0NK_aEVT6xoXpo6TY3fCYsyPlWzJI7/preview"},
+  {id:31, pdf:"https://drive.google.com/file/d/1kZ0u8-s34EVhmDNEwQQ17rR3gaG-BzJu/preview"},
+  {id:32, pdf:"https://drive.google.com/file/d/1vZNMlOjsK8_fCiQZRqhd99pEtiPAtNOw/preview"},
+  {id:33, pdf:"https://drive.google.com/file/d/1ZTUC86m01jk6EFnsWpVENG8AHthlV7Jc/preview"},
+  {id:34, pdf:"https://drive.google.com/file/d/1ZTUC86m01jk6EFnsWpVENG8AHthlV7Jc/preview"},
+  {id:35, pdf:"https://drive.google.com/file/d/1j4pUUjlD6H6PmVUvrnKdLg6SzQz71xPy/preview"},
+  {id:36, pdf:"https://drive.google.com/file/d/1MxhGqTn394cm3tub2uuxGpo0E3wYdKBI/preview"},
+  {id:37, pdf:"https://drive.google.com/file/d/1hjmVUlleqkGVVMSGCzomDIqijmDpq1eH/preview"},
+  {id:38, pdf:"https://drive.google.com/file/d/1Ky8LjN0GDxrhaVvj-b5-3AEi6Gb4f8LC/preview"},
+  {id:39, pdf:"https://drive.google.com/file/d/1Q0JA5EiejG-0FWYasLVfjABHh3Td5ezF/preview"},
+  {id:40, pdf:"https://drive.google.com/file/d/1f3jTJdBhbexXv6WGysEP1_nwiMAMziQw/preview"},
+  {id:41, pdf:"https://drive.google.com/file/d/1yd2ZRZ2QINtc3NcQCcW2sMpHsLW2yY5l/preview"},
+  {id:42, pdf:"https://drive.google.com/file/d/1c2GIf7vwthe1-8UsRkPKC8fP0B1NU3Wu/preview"},
+  {id:43, pdf:"https://drive.google.com/file/d/1Ik8rkczXznBAJyEh5W7exH7_HGoZCsK_/preview"},
+  {id:44, pdf:"https://drive.google.com/file/d/1fv5UFlnz46g4mLSQZlANP7_8kUWiNjek/preview"},
+  {id:45, pdf:"https://drive.google.com/file/d/1swicAZh23CSKk4glEQnthC31NgR8KdoK/preview"}
+];
+
+const avaliadores = ["Ana Regina", "Fernanda Soares", "Heloise Gripp", "Priscilla Cavalcante"];
+
+// cria cada bloco de avaliação
+posters.forEach(p => {
+  const container = document.createElement('div');
+  container.className = 'poster';
+  container.innerHTML = `
+    <h2>Avaliação ${p.id}</h2>
+    <iframe src="${p.pdf}" title="Pôster ${p.id}"></iframe>
+    <form id="form${p.id}" class="form">
+      <label>Selecione o resultado:</label>
+      <div class="radios">
+        <label><input type="radio" name="status" value="Aprovado" required> Aprovado</label>
+        <label><input type="radio" name="status" value="Aprovado com correcoes"> Aprovado com correções</label>
+        <label><input type="radio" name="status" value="Reprovado"> Reprovado</label>
+      </div>
+      <label for="obs${p.id}">Observações (opcional):</label>
+      <textarea id="obs${p.id}" name="observacoes" placeholder="Escreva suas observações..."></textarea>
+      <label for="aval${p.id}">Avaliador:</label>
+      <select id="aval${p.id}" name="avaliador" required>
+        <option value="">Selecione</option>
+        ${avaliadores.map(a => `<option value="${a}">${a}</option>`).join('')}
+      </select>
+      <div>
+        <button type="submit">Enviar</button>
+      </div>
+    </form>
+  `;
+  document.body.appendChild(container);
+
+  // Adiciona listener de envio do formulário
+  const form = container.querySelector('form');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    enviarMail(p.id, form);
+  });
+});
+
+// função que monta mailto e abre o cliente de e-mail
+function enviarMail(id, form) {
+  // pega status selecionado
+  const statusInput = form.querySelector('input[name="status"]:checked');
+  const status = statusInput ? statusInput.value : '';
+  const observacoes = form.querySelector('textarea[name="observacoes"]').value.trim();
+  const avaliador = form.querySelector('select[name="avaliador"]').value;
+
+  if (!status) {
+    alert('Por favor selecione um resultado antes de enviar.');
+    return;
+  }
+  if (!avaliador) {
+    alert('Por favor selecione seu nome (avaliador).');
+    return;
+  }
+
+  const subject = `Avaliação ${id} - Comunicação Sinalizada`;
+  const bodyLines = [
+    `Avaliação: ${id}`,
+    `Data: ${new Date().toLocaleString()}`,
+    `Avaliador: ${avaliador}`,
+    `Resultado: ${status}`,
+    `Observações:`,
+    observacoes || '(sem observações)',
+    '',
+    '--- Enviado via formulário de avaliação ---'
+  ];
+  const body = bodyLines.join('\n');
+
+  // monta mailto com encode
+  const mailto = `mailto:${TO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  // abre o cliente de e-mail (em nova aba/janela ou no próprio navegador)
+  window.location.href = mailto;
+
+  // mostra mensagem de agradecimento substituindo o formulário
+  form.innerHTML = `<div class="thanks">Obrigado pela avaliação! (Avaliação ${id})</div>`;
+}
+</script>
+
+</body>
+</html>
